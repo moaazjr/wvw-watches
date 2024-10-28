@@ -1,4 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { userContext } from "./login/useUser";
+import { Router } from "next/router";
+import { useRouter } from "next/navigation";
 
 const watchContext = createContext<ReturnType<typeof useWatches> | null>(null);
 
@@ -21,9 +24,12 @@ export function useWatches() {
 
 function useWatchesProvider() {
   const [data, setData] = useState<any[] | null>(null);
-  const [sort, setSort] = useState("newest"); 
+  const [sort, setSort] = useState("newest");
   const [favorites, setFavorites] = useState<string[]>([]);
 
+  const { user } = useContext(userContext);
+
+  const router = useRouter();
   const [filter, setFilter] = useState<{ brand: string[]; water: string }>({
     brand: [],
     water: "none",
@@ -52,6 +58,10 @@ function useWatchesProvider() {
   }
 
   function toggleFavorite(watch) {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
     if (favorites.includes(watch.id)) {
       setFavorites((fav) => {
         localStorage.setItem(

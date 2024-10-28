@@ -1,6 +1,13 @@
-import { useState } from "react";
+"use client";
 
-export function Navbar({setOpen}) {
+import Link from "next/link";
+import { useContext } from "react";
+import { userContext } from "./login/useUser";
+import { cartContext, CartProvider } from "./useCart";
+
+export function Navbar({ setOpen }) {
+  const { user, logout } = useContext(userContext);
+  const { items } = useContext(cartContext);
 
   return (
     <div>
@@ -24,9 +31,7 @@ export function Navbar({setOpen}) {
           <li className="flex-1 text-center p-4 py-8">men</li>
           <li className="flex-1 text-center p-4 py-8">bestselling</li>
           <li className="p-5 py-8">
-            <button
-            onClick={()=>setOpen(true)}
-            >
+            <button onClick={() => setOpen(true)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.5em"
@@ -46,7 +51,11 @@ export function Navbar({setOpen}) {
           <li className="p-5 py-8">
             <div className="relative">
               <span className="bg-secondary rounded-full text-center text-[10px] h-4 w-4 grid place-items-center text-white absolute -bottom-1 -right-1">
-                4
+                {items.reduce(
+                  (accumulator, currentValue) =>
+                    accumulator + currentValue.count,
+                  0
+                )}
               </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -70,6 +79,43 @@ export function Navbar({setOpen}) {
                   />
                 </g>
               </svg>
+            </div>
+          </li>
+          <li className="p-5 py-8">
+            <div className="relative">
+              {!user ? (
+                <Link href="/login">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1.5em"
+                    height="1.5em"
+                    viewBox="0 0 1024 1024"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M512 512a192 192 0 1 0 0-384a192 192 0 0 0 0 384m0 64a256 256 0 1 1 0-512a256 256 0 0 1 0 512m320 320v-96a96 96 0 0 0-96-96H288a96 96 0 0 0-96 96v96a32 32 0 1 1-64 0v-96a160 160 0 0 1 160-160h448a160 160 0 0 1 160 160v96a32 32 0 1 1-64 0"
+                    />
+                  </svg>
+                </Link>
+              ) : (
+                <button onClick={logout}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="1.5em"
+                    height="1.5em"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M12 3.25a.75.75 0 0 1 0 1.5a7.25 7.25 0 0 0 0 14.5a.75.75 0 0 1 0 1.5a8.75 8.75 0 1 1 0-17.5"
+                    />
+                    <path
+                      fill="currentColor"
+                      d="M16.47 9.53a.75.75 0 0 1 1.06-1.06l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H10a.75.75 0 0 1 0-1.5h8.19z"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
           </li>
         </ul>
